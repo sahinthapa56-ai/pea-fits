@@ -30,6 +30,19 @@ declare module "@auth/core/jwt" {
 }
 
 // ──────────────────────────────────────────────
+// Provider helpers — conditionally include
+// providers whose env vars are configured
+// ──────────────────────────────────────────────
+
+const googleProvider =
+  process.env.AUTH_GOOGLE_ID && process.env.AUTH_GOOGLE_SECRET
+    ? Google({
+        clientId: process.env.AUTH_GOOGLE_ID,
+        clientSecret: process.env.AUTH_GOOGLE_SECRET,
+      })
+    : null;
+
+// ──────────────────────────────────────────────
 // NextAuth Configuration
 // ──────────────────────────────────────────────
 
@@ -40,10 +53,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     signIn: "/login",
   },
   providers: [
-    Google({
-      clientId: process.env.AUTH_GOOGLE_ID,
-      clientSecret: process.env.AUTH_GOOGLE_SECRET,
-    }),
+    ...(googleProvider ? [googleProvider] : []),
     Credentials({
       name: "credentials",
       credentials: {
