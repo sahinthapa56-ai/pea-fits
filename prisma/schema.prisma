@@ -49,15 +49,15 @@ model User {
   image         String?
   emailVerified DateTime?
 
-  // 📦 Consolidated shipping address (JSON)
-  shippingAddress Json?
+  // 📦 Consolidated shipping address (JSON) — new format
+  shippingAddressJson Json?  @map("shipping_address_json")
 
-  // [Deprecated] Individual shipping fields – kept for backwards compat
-  shippingAddress_old  String?  @map("shipping_address_old")
-  shippingCity_old     String?  @map("shipping_city_old")
-  shippingProvince_old String?  @map("shipping_province_old")
-  shippingZip_old      String?  @map("shipping_zip_old")
-  shippingCountry_old  String?  @default("Nepal") @map("shipping_country_old")
+  // 🏚️ Legacy individual shipping fields – used throughout the app
+  shippingAddress String?
+  shippingCity    String?
+  shippingProvince String?
+  shippingZip     String?
+  shippingCountry String?  @default("Nepal")
 
   deletedAt DateTime?
 

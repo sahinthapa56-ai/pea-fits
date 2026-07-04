@@ -54,7 +54,11 @@ async function main() {
       hashedPassword: adminPassword,
       role: "SUPER_ADMIN",
       phone: "9800000000",
-      shippingAddress: { line1: "Durbar Marg", city: "Kathmandu", province: "Bagmati", zip: "44600", country: "Nepal" },
+      shippingAddress: "Durbar Marg",
+      shippingCity: "Kathmandu",
+      shippingProvince: "Bagmati",
+      shippingZip: "44600",
+      shippingCountry: "Nepal",
     },
   });
 
@@ -66,7 +70,11 @@ async function main() {
       hashedPassword: customerPassword,
       role: "CUSTOMER",
       phone: "9812345678",
-      shippingAddress: { line1: "Jhamsikhel, Lalitpur", city: "Lalitpur", province: "Bagmati", zip: "44700", country: "Nepal" },
+      shippingAddress: "Jhamsikhel, Lalitpur",
+      shippingCity: "Lalitpur",
+      shippingProvince: "Bagmati",
+      shippingZip: "44700",
+      shippingCountry: "Nepal",
     },
   });
 
