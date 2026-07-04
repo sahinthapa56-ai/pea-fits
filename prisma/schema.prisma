@@ -303,14 +303,14 @@ model Order {
   // 📦 Shipping address (JSON – supersedes individual fields)
   shippingInfo    Json?
 
-  // [Deprecated] Individual shipping fields – kept for backwards compat
-  shippingName_old    String?  @map("shippingName")
-  shippingPhone_old   String?  @map("shippingPhone")
-  shippingAddress_old String?  @map("shippingAddress")
-  shippingCity_old    String?  @map("shippingCity")
-  shippingProvince_old String? @map("shippingProvince")
-  shippingZip_old     String?  @map("shippingZip")
-  shippingCountry_old String?  @default("Nepal") @map("shippingCountry")
+  // [Deprecated] Individual shipping fields – used throughout the app
+  shippingName    String?
+  shippingPhone   String?
+  shippingAddress String?
+  shippingCity    String?
+  shippingProvince String?
+  shippingZip     String?
+  shippingCountry String?  @default("Nepal")
 
   paymentMethod   String?
   paymentDetails  String?
