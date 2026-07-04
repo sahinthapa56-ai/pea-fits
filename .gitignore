@@ -52,3 +52,6 @@ next-env.d.ts
 /agent/
 /agents/
 prisma/dev.db
+
+.vercel
+.env*
