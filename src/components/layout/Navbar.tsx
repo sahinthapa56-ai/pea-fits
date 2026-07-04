@@ -84,9 +84,8 @@ export function Navbar() {
   // ── Active link helper — matches pathname + query params ──
   const isLinkActive = (href: string): boolean => {
     const [linkPath, linkQuery] = href.split("?");
-    if (!linkQuery) return pathname === linkPath; // plain path
-    // Query-param links: match path + full query string
     const currentQuery = searchParams.toString();
+    if (!linkQuery) return pathname === linkPath && !currentQuery;
     return pathname === linkPath && currentQuery === linkQuery;
   };
 
