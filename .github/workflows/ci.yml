@@ -1,0 +1,95 @@
+name: CI/CD
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: "20"
+  DATABASE_URL: postgresql://postgres:postgres@localhost:5432/pea-fits-test
+  NEXTAUTH_SECRET: test-secret-for-ci-32-chars-minimum-req
+  NEXTAUTH_URL: http://localhost:3000
+  NEXT_PUBLIC_URL: http://localhost:3000
+  STRIPE_SECRET_KEY: sk_test_mock
+  NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: pk_test_mock
+  STRIPE_WEBHOOK_SECRET: whsec_mock
+  KV_URL: redis://localhost:6379
+  NEXT_PUBLIC_SUPABASE_URL: https://mock.supabase.co
+  NEXT_PUBLIC_SUPABASE_ANON_KEY: mock-anon-key
+  SUPABASE_SERVICE_ROLE_KEY: mock-service-role-key
+  RESEND_API_KEY: re_mock
+  EMAIL_FROM: test@peafits.com.np
+
+jobs:
+  quality:
+    name: Quality Checks
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: pea-fits-test
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+
+      - run: npm ci
+
+      - name: Prisma Generate
+        run: npx prisma generate
+
+      - name: Prisma Migrate (Test DB)
+        run: npx prisma db push
+
+      - name: Prisma Validate
+        run: npx prisma validate
+
+      - name: TypeScript Check
+        run: npx tsc --noEmit
+
+      - name: Lint
+        run: npx next lint --dir src 2>&1 | tee lint-output.txt; test $(grep -c "Error:" lint-output.txt) -eq 0
+
+      - name: Unit & Integration Tests
+        run: npm test
+
+      - name: Production Build
+        run: npm run build
+
+      - name: Security Audit
+        run: npm audit --audit-level=high || true
+
+  deploy:
+    name: Deploy to Vercel
+    needs: quality
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Deploy to Vercel
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          vercel-args: "--prod"
