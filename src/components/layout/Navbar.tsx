@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useCartStore } from "@/store/cart-store";
 import { SITE_NAME, NAV_LINKS } from "@/lib/constants";
@@ -50,6 +50,7 @@ function NavLink({ href, label, isActive, onClick }: NavLinkProps) {
 
 export function Navbar() {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const router = useRouter();
   const { data: session } = useSession();
   const { items } = useCartStore();
@@ -79,6 +80,15 @@ export function Navbar() {
   }, [mobileOpen]);
 
   const cartCount = items.reduce((sum, item) => sum + item.quantity, 0);
+
+  // ── Active link helper — matches pathname + query params ──
+  const isLinkActive = (href: string): boolean => {
+    const [linkPath, linkQuery] = href.split("?");
+    if (!linkQuery) return pathname === linkPath; // plain path
+    // Query-param links: match path + full query string
+    const currentQuery = searchParams.toString();
+    return pathname === linkPath && currentQuery === linkQuery;
+  };
 
   return (
     <header
@@ -137,7 +147,7 @@ export function Navbar() {
                 key={link.href}
                 href={link.href}
                 label={link.label}
-                isActive={pathname === link.href || pathname.startsWith(link.href.split("?")[0])}
+                isActive={isLinkActive(link.href)}
               />
             ))}
           </div>
@@ -219,7 +229,7 @@ export function Navbar() {
                 onClick={() => setMobileOpen(false)}
                 className={cn(
                   "text-lg py-2 border-b border-neutral-100 transition-colors",
-                  pathname === link.href
+                  isLinkActive(link.href)
                     ? "text-black font-medium"
                     : "text-neutral-600 hover:text-black",
                 )}

@@ -6,6 +6,7 @@ import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { ToastProvider } from "@/components/ui/Toast";
 import { SITE_NAME, SITE_URL } from "@/lib/constants";
+import { Suspense } from "react";
 
 // ──────────────────────────────────────────────
 // Fonts
@@ -107,7 +108,9 @@ export default function RootLayout({
 
         <AuthProvider>
           <ToastProvider>
-            <Navbar />
+            <Suspense fallback={null}>
+              <Navbar />
+            </Suspense>
             <main id="main-content" className="flex-1">
               {children}
             </main>
