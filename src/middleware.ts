@@ -1,5 +1,5 @@
-import { auth } from "@/lib/auth";
-import { NextResponse } from "next/server";
+import { getToken } from "next-auth/jwt";
+import { NextRequest, NextResponse } from "next/server";
 import {
   isCsrfProtectedPath,
   isStateChangingMethod,
@@ -12,9 +12,11 @@ import {
 // Middleware
 // ──────────────────────────────────────────────
 
-export default auth((req) => {
+export default async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
-  const session = req.auth;
+
+  // Get session via JWT (lightweight, no DB/Prisma/bcrypt)
+  const token = await getToken({ req });
 
   // ── Public routes (no auth required) ──
   const publicPaths = [
@@ -49,13 +51,13 @@ export default auth((req) => {
 
   // Admin routes: require admin role
   if (pathname.startsWith("/admin")) {
-    if (!session) {
+    if (!token) {
       const loginUrl = new URL("/login", req.url);
       loginUrl.searchParams.set("callbackUrl", pathname);
       return NextResponse.redirect(loginUrl);
     }
 
-    if (session.user.role !== "ADMIN" && session.user.role !== "SUPER_ADMIN") {
+    if (token.role !== "ADMIN" && token.role !== "SUPER_ADMIN") {
       const loginUrl = new URL("/login", req.url);
       loginUrl.searchParams.set("error", "Admin access required");
       return NextResponse.redirect(loginUrl);
@@ -81,7 +83,7 @@ export default auth((req) => {
     (path) => pathname === path || pathname.startsWith(path + "/"),
   );
 
-  if (requiresAuth && !session) {
+  if (requiresAuth && !token) {
     const loginUrl = new URL("/login", req.url);
     loginUrl.searchParams.set("callbackUrl", pathname);
     return NextResponse.redirect(loginUrl);
@@ -98,7 +100,7 @@ export default auth((req) => {
   const response = NextResponse.next();
   ensureCsrfCookie(req, response);
   return response;
-});
+}
 
 // ──────────────────────────────────────────────
 // Matcher configuration
