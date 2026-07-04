@@ -96,27 +96,3 @@ export function rateLimiter(options: {
     },
   };
 }
-
-// ──────────────────────────────────────────────
-// CSRF origin validation helper
-// ──────────────────────────────────────────────
-
-export function validateOrigin(request: Request, allowedOrigins: string[]): boolean {
-  const origin = request.headers.get("origin");
-  const referer = request.headers.get("referer");
-
-  // If neither header is present, allow (could be server-side request)
-  if (!origin && !referer) return true;
-
-  // Check origin header
-  if (origin && allowedOrigins.some((allowed) => origin.startsWith(allowed))) {
-    return true;
-  }
-
-  // Check referer header as fallback
-  if (referer && allowedOrigins.some((allowed) => referer.startsWith(allowed))) {
-    return true;
-  }
-
-  return false;
-}

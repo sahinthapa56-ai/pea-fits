@@ -9,7 +9,6 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
-import { fetchWithCsrf } from "@/lib/csrf-client";
 
 // ──────────────────────────────────────────────
 // Validation schema
@@ -112,7 +111,7 @@ export function RegisterForm() {
 
       try {
         // Register the user
-        const response = await fetchWithCsrf("/api/auth/register", {
+        const response = await fetch("/api/auth/register", {
           method: "POST",
           body: JSON.stringify({
             name: data.name,
