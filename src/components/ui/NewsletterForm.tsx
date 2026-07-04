@@ -34,9 +34,9 @@ export function NewsletterForm({ className }: NewsletterFormProps) {
 
     try {
       const res = await fetch("/api/newsletter", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email.trim() }),
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ email }),
       });
       const data = await res.json();
 

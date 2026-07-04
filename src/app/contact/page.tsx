@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
 import { SOCIAL_LINKS } from "@/lib/constants";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";

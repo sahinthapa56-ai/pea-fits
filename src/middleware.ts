@@ -1,12 +1,5 @@
 import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
-import {
-  isCsrfProtectedPath,
-  isStateChangingMethod,
-  validateCsrfRequest,
-  ensureCsrfCookie,
-  csrfErrorResponse,
-} from "@/lib/csrf";
 
 // ──────────────────────────────────────────────
 // Middleware
@@ -34,17 +27,7 @@ export default async function middleware(req: NextRequest) {
   );
 
   if (isPublic) {
-    // Public API routes that change state still need CSRF protection
-    if (isCsrfProtectedPath(pathname) && isStateChangingMethod(req.method)) {
-      if (!validateCsrfRequest(req)) {
-        return csrfErrorResponse();
-      }
-    }
-    // Ensure CSRF cookie is set even on public pages so that subsequent
-    // form submissions (e.g. register, contact) can include the token.
-    const response = NextResponse.next();
-    ensureCsrfCookie(req, response);
-    return response;
+    return NextResponse.next();
   }
 
   // ── Protected routes ──
@@ -63,17 +46,7 @@ export default async function middleware(req: NextRequest) {
       return NextResponse.redirect(loginUrl);
     }
 
-    // CSRF check for state-changing admin requests
-    if (isStateChangingMethod(req.method)) {
-      if (!validateCsrfRequest(req)) {
-        return csrfErrorResponse();
-      }
-    }
-
-    // Set CSRF cookie for subsequent requests
-    const response = NextResponse.next();
-    ensureCsrfCookie(req, response);
-    return response;
+    return NextResponse.next();
   }
 
   // Authenticated routes: require session
@@ -89,17 +62,7 @@ export default async function middleware(req: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
-  // CSRF check for protected API routes (cart, checkout, profile, etc.)
-  if (isCsrfProtectedPath(pathname) && isStateChangingMethod(req.method)) {
-    if (!validateCsrfRequest(req)) {
-      return csrfErrorResponse();
-    }
-  }
-
-  // Set CSRF cookie for subsequent requests
-  const response = NextResponse.next();
-  ensureCsrfCookie(req, response);
-  return response;
+  return NextResponse.next();
 }
 
 // ──────────────────────────────────────────────
