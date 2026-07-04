@@ -370,6 +370,7 @@ export default function CheckoutPage() {
                         onChange={(e) => setShipping({ ...shipping, province: e.target.value })}
                         className="block w-full bg-surface border border-border rounded-lg px-4 py-3 text-primary focus:outline-none focus:ring-2 focus:ring-primary text-base"
                         aria-invalid={!!errors.province}
+                        aria-describedby={errors.province ? "province-error" : undefined}
                       >
                         <option value="">Select province</option>
                         {NEPALI_PROVINCES.map((p) => (
@@ -377,7 +378,7 @@ export default function CheckoutPage() {
                         ))}
                       </select>
                       {errors.province && (
-                        <p className="text-sm text-error" role="alert">{errors.province}</p>
+                        <p id="province-error" className="text-sm text-error" role="alert">{errors.province}</p>
                       )}
                     </div>
                     <Input
@@ -593,7 +594,7 @@ export default function CheckoutPage() {
                         <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center text-neutral-300">
-                          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1}>
+                          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1} aria-hidden="true">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M3.75 21h16.5A2.25 2.25 0 0022.5 18.75V5.25A2.25 2.25 0 0020.25 3H3.75A2.25 2.25 0 001.5 5.25v13.5A2.25 2.25 0 003.75 21z" />
                           </svg>
                         </div>

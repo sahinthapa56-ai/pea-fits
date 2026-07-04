@@ -416,7 +416,7 @@ export default function NewProductPage() {
                     className="p-2 text-text-secondary hover:text-error transition-colors mb-1"
                     aria-label={`Remove variant ${index + 1}`}
                   >
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                   </button>
