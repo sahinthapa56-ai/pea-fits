@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { formatPrice } from "@/lib/utils";
 import { useCartStore } from "@/store/cart-store";
@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/Button";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
 import { useToast } from "@/components/ui/Toast";
 import BackInStockForm from "@/components/products/BackInStockForm";
+import DOMPurify from "dompurify";
 import type { Product, ProductVariant, ProductImage, Review } from "@/types/index";
 
 // ──────────────────────────────────────────────
@@ -275,7 +276,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                 </h2>
                 <div
                   className="prose prose-sm text-text-secondary leading-relaxed max-w-none"
-                  dangerouslySetInnerHTML={{ __html: product.description }}
+                  dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(product.description) }}
                 />
               </div>
             )}

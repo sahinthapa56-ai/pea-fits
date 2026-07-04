@@ -92,7 +92,7 @@ export async function POST(request: Request) {
     const sent = await sendPasswordResetEmail(email, user.name, resetUrl);
 
     if (!sent && process.env.NODE_ENV !== "development") {
-      console.error(`Failed to send reset email to ${email}. Token: ${resetToken}`);
+      console.error(`Failed to send reset email to ${email}`);
     }
 
     return NextResponse.json({

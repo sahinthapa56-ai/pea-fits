@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
+import { rateLimiter } from "@/lib/rate-limit";
 
 // ──────────────────────────────────────────────
 // Validation
@@ -10,6 +11,8 @@ const backInStockSchema = z.object({
   email: z.string().email("Valid email is required").max(255),
   variantId: z.string().optional(),
 });
+
+const backInStockLimiter = rateLimiter({ maxRequests: 10, windowMs: 60_000 });
 
 // ──────────────────────────────────────────────
 // POST /api/products/[slug]/back-in-stock
@@ -21,6 +24,25 @@ export async function POST(
 ) {
   try {
     const { slug } = await params;
+
+    // Rate limiting by IP
+    const ip =
+      request.headers.get("x-forwarded-for")?.split(",")[0]?.trim()
+      ?? request.headers.get("x-real-ip")
+      ?? "unknown";
+    const rateCheck = await backInStockLimiter.check(ip);
+    if (!rateCheck.allowed) {
+      return NextResponse.json(
+        { success: false, error: "Too many requests. Please try again later." },
+        {
+          status: 429,
+          headers: {
+            "Retry-After": Math.ceil(rateCheck.resetIn / 1000).toString(),
+            "X-RateLimit-Remaining": "0",
+          },
+        },
+      );
+    }
 
     // Validate body
     const body = await request.json();

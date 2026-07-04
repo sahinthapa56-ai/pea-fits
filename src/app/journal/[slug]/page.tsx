@@ -5,6 +5,7 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import { Skeleton } from "@/components/ui/Skeleton";
 import type { JournalArticle } from "@/types/index";
+import DOMPurify from "dompurify";
 
 // ──────────────────────────────────────────────
 // Share Button
@@ -192,7 +193,7 @@ export default function JournalPostPage() {
       <div className="mx-auto px-5 lg:px-16 max-w-3xl py-12 lg:py-16">
         <div
           className="rich-text text-secondary"
-          dangerouslySetInnerHTML={{ __html: content }}
+          dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(content) }}
         />
 
         {/* ── Share Section ── */}
